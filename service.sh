@@ -18,19 +18,19 @@ service_start() {
     if is_running; then
         local pid
         pid=$(cat "$PID_FILE")
-        echo "Уже запущен (PID $pid)"
+        echo "Already running (PID $pid)"
         exit 0
     fi
 
     sleep 3600 &
     local bg_pid=$!
     echo "$bg_pid" > "$PID_FILE"
-    echo "Запущен (PID $bg_pid)"
+    echo "Started (PID $bg_pid)"
 }
 
 service_stop() {
     if [ ! -f "$PID_FILE" ]; then
-        echo "Сервис не запущен"
+        echo "Service not running"
         exit 0
     fi
 
@@ -40,10 +40,10 @@ service_stop() {
     if kill -0 "$pid" 2>/dev/null; then
         kill "$pid" 2>/dev/null || true
         rm -f "$PID_FILE"
-        echo "Остановлен (PID $pid)"
+        echo "Stoped (PID $pid)"
     else
         rm -f "$PID_FILE"
-        echo "Процесс (PID $pid) не существует. PID-файл удален."
+        echo "No such process (PID $pid)."
     fi
 }
 
@@ -51,14 +51,14 @@ service_status() {
     if is_running; then
         local pid
         pid=$(cat "$PID_FILE")
-        echo "Работает (PID $pid)"
+        echo "Running (PID $pid)"
     else
-        echo "Не работает"
+        echo "Not running"
     fi
 }
 
 service_help() {
-    echo "Использование: $0 {start|stop|status|help}"
+    echo "Usage: $0 {start|stop|status|help}"
 }
 
 COMMAND="${1:-help}"
@@ -77,7 +77,7 @@ case "$COMMAND" in
         service_help
         ;;
     *)
-        echo "Ошибка: Неизвестная команда '$COMMAND'" >&2
+        echo "ERROR: Unknown command '$COMMAND'" >&2
         service_help >&2
         exit 1
         ;;
